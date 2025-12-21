@@ -10,8 +10,6 @@ export const useCandidateStore = defineStore('candidate', {
         saveToLocalStorage() {
             localStorage.setItem('my-candidates', JSON.stringify(this.candidates));
         },
-
-        totalCandidates: (state) => state.candidates.length,
         
         getCandidateById: (state) => {
             return (id) => state.candidates.find(c => c.id === id)

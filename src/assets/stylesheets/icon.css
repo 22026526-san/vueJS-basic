@@ -75,6 +75,11 @@
     background-color: #6b7280;
 }
 
+.icon-dropdown-btn { 
+    background-color: #7a8188;;
+    mask-position: -32px -48px;
+}
+
 .icon-knowladge { 
     width: 32px;
     height: 32px;

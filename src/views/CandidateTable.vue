@@ -1,16 +1,73 @@
 <script setup>
 import { useCandidateStore } from '../stores/candidate-store/CandidateStore.js';
 import { storeToRefs } from 'pinia';
+import { ref , computed} from 'vue';
+import BaseSelect from '../components/base/BaseSelect.vue';
 
 const store = useCandidateStore();
 
-const { candidates, totalCandidates } = storeToRefs(store);
+const { candidates } = storeToRefs(store);
 
-const { deleteCandidate } = store;
+const pageSize = ref(25);
+let currentPage = ref(1);
+let searchQuery = ref('');
+
+const filteredCandidates = computed(() => {
+    const query = searchQuery.value.trim().toLowerCase();
+    if (!query) return candidates.value;
+
+    return candidates.value.filter(c => 
+        (c.fullName || '').toLowerCase().includes(query) ||
+        (c.email || '').toLowerCase().includes(query) ||
+        (c.phone || '').toString().includes(query)
+    );
+});
+
+const totalPages = computed(() => filteredCandidates.value.length);
+
+const startRecord = computed(() => {
+    if (totalPages.value === 0) return 0;
+    return (currentPage.value - 1) * pageSize.value + 1;
+});
+
+const endRecord = computed(() => {
+    const end = (currentPage.value - 1) * pageSize.value + pageSize.value;
+    return end > totalPages.value ? totalPages.value : end;
+});
+
+const dataTable = computed(() => {
+    const start = (currentPage.value - 1) * pageSize.value;
+    const end = start + pageSize.value;
+    return filteredCandidates.value.slice(start, end);
+});
+const pageSizeOptions = [
+    { value: 10 },
+    { value: 15 },
+    { value: 20 },
+    { value: 25 },
+];
 
 function checkNull(value) {
   return value === null || value === undefined || value === '' ? '--' : value;
 }
+
+function onClickPrevBtn() {
+  if (currentPage.value > 1) {
+    currentPage.value -= 1;
+  }
+}
+function onClickNextBtn() {
+  if (currentPage.value < Math.ceil(totalPages.value / pageSize.value)) {
+    currentPage.value += 1;
+  }
+}
+
+const isPrevBtnDisabled = computed(() => {
+  return currentPage.value === 1;
+});
+const isNextBtnDisabled = computed(() => {
+  return Math.ceil(totalPages.value / pageSize.value) <= currentPage.value;
+});
 </script>
 
 <template>
@@ -30,8 +87,10 @@ function checkNull(value) {
   <div class="body-table">
     <div class="toolbar">
       <div class="search-box">
-        <div class="search-icon-table"></div>
-        <input type="text" placeholder="Tìm kiếm nhanh trong danh sách" />
+        <div class="dx-button-content">
+          <div class="icon-ai-button-table"></div>
+        </div>
+        <input type="text" placeholder="Tìm kiếm nhanh trong danh sách" v-model.lazy="searchQuery"/>
       </div>
       <div class="toolbar-right">
         <button class="icon-btn-table">
@@ -73,7 +132,7 @@ function checkNull(value) {
           </tr>
         </thead>
         <tbody>
-          <tr v-for="candidate in candidates" :key="candidate.id">
+          <tr v-for="candidate in dataTable" :key="candidate.id">
             <td><input type="checkbox" value="${candidate.id}"></td>
             <td>
                 <div class="name-cell">
@@ -113,31 +172,27 @@ function checkNull(value) {
             <td>{{checkNull(candidate.address)}}</td>
             <td>{{checkNull(candidate.gender)}}</td>
             <td>
-                <div class="icon-update-user" data-id="${candidate.id}"></div>
+                <div class="icon-update-user"></div>
             </td>
           </tr>
         </tbody>
       </table>
     </div>
     <div class="table-footer">
-      <div class="footer-left">Tổng: <strong>{{ totalCandidates }}</strong> bản ghi</div>
+      <div class="footer-left">Tổng: <strong>{{ totalPages }}</strong> bản ghi</div>
       <div class="footer-right">
         <div class="page-size">
           <span>Số bản ghi/trang</span>
-          <div class="page-size-select">
-            <select id="pageSizeSelect" class="form-select-size">
-              <option value="10">10</option>
-              <option value="15">15</option>
-              <option value="20">20</option>
-              <option value="25" selected>25</option>
-            </select>
-          </div>
+          <BaseSelect 
+              v-model="pageSize" 
+              :options="pageSizeOptions" 
+          />
         </div>
         <div class="pagination">
-          <span></span>
+          <span>{{ startRecord }} - {{ endRecord }} bản ghi</span>
           <div class="pagination-icon">
-            <div class="icon-20 icon-prev"></div>
-            <div class="icon-20 icon-next"></div>
+            <div class="icon-20 icon-prev" :class="{ disabled: isPrevBtnDisabled }" v-on:click="onClickPrevBtn"></div>
+            <div class="icon-20 icon-next" :class="{ disabled: isNextBtnDisabled }" v-on:click="onClickNextBtn"></div>
           </div>
         </div>
       </div>
@@ -201,19 +256,35 @@ function checkNull(value) {
   border-color: #2680eb;
 }
 
-.search-icon-table {
+@keyframes spin-ai {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.icon-ai-button-table {
+  width: 23px;
+  height: 23px;
+  background: url('../assets/icons/ai-search-candidate.svg') center / cover no-repeat,
+              linear-gradient(135deg, #95c5ff, #0051ff);
+  border-radius: 50%;
+  box-shadow: 0 0 5px rgba(59, 130, 246, 0.7);
+  animation: spin-ai 3s linear infinite;
+}
+
+.dx-button-content {
   position: absolute;
-  left: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-  mask-image: url(../assets/icons/ICON.svg);
-  mask-repeat: no-repeat;
-  mask-position: -283px -945px;
-  background-color: rgba(128, 128, 128, 0.832);
-  width: 18px;
-  height: 18px;
-  margin-top: 2px;
-  cursor: pointer;
+  top: 0;
+  left: 3px;
+  padding: 4px;
+  height: 35px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: transparent;
 }
 
 .body-title {
@@ -244,11 +315,11 @@ function checkNull(value) {
 .toolbar {
   display: flex;
   align-items: center;
-  padding: 12px 24px;
+  padding: 12px 24px 12px 12px;
   background: white;
   border-bottom: 1px solid #e5e7eb;
   gap: 12px;
-  justify-content: end;
+  justify-content: space-between;
 }
 
 .toolbar-right {
@@ -421,28 +492,6 @@ function checkNull(value) {
   font-size: 14px;
 }
 
-.pagination button {
-  width: 32px;
-  height: 32px;
-  border: 1px solid #d1d5db;
-  border-radius: 4px;
-  background: white;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #6b7280;
-}
-
-.pagination button:hover:not(:disabled) {
-  background: #f9fafb;
-}
-
-.pagination button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
 /* Page Size Select */
 .page-size {
   display: flex;
@@ -492,20 +541,28 @@ input[type="checkbox"] {
   cursor: pointer;
 }
 
-.form-select-size {
-  padding: 0px 5px;
-  border-radius: 4px;
-  background-color: white;
-  font-size: 14px;
-  color: #374151;
-  cursor: pointer;
-  outline: none;
-  -webkit-appearance: auto;
-  appearance: auto;
-  border: none;
+.page-size :deep(.base-select) {
+  min-width: 68px;
+  width: auto;
 }
 
-.form-select-size:hover {
-  color: #3b82f6;
+.page-size :deep(.select-dropdown) {
+  bottom: 100%; 
+  margin-bottom: 4px;
+}
+
+.page-size :deep(.select-trigger:hover .text) {
+  color: #2680eb;
+}
+
+.page-size :deep(.select-trigger:hover .icon-dropdown-btn) {
+  background-color: #2680eb;
+}
+
+.icon-prev.disabled, 
+.icon-next.disabled {
+    opacity: 0.5 !important;      
+    pointer-events: none !important; 
+    cursor: default !important;   
 }
 </style>
