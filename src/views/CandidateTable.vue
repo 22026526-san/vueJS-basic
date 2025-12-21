@@ -3,14 +3,17 @@ import { useCandidateStore } from '../stores/candidate-store/CandidateStore.js';
 import { storeToRefs } from 'pinia';
 import { ref , computed} from 'vue';
 import BaseSelect from '../components/base/BaseSelect.vue';
+import CandidateFormPopup from '../components/candidate/CandidateFormPopup.vue';
 
 const store = useCandidateStore();
 
 const { candidates } = storeToRefs(store);
 
+const isOpenPopup = ref(false);
 const pageSize = ref(25);
 let currentPage = ref(1);
 let searchQuery = ref('');
+let idSelected = ref(null);
 
 const filteredCandidates = computed(() => {
     const query = searchQuery.value.trim().toLowerCase();
@@ -74,7 +77,7 @@ const isNextBtnDisabled = computed(() => {
   <div class="body-title">
     <div class="body-title-left">Ứng viên</div>
     <div class="body-title-right">
-      <div class="body-title-btn">
+      <div class="body-title-btn" @click="isOpenPopup = true; isEditPopup = false">
         <div class="icon-20 btn-icon-add"></div>
         <span>Thêm ứng viên</span>
       </div>
@@ -172,7 +175,7 @@ const isNextBtnDisabled = computed(() => {
             <td>{{checkNull(candidate.address)}}</td>
             <td>{{checkNull(candidate.gender)}}</td>
             <td>
-                <div class="icon-update-user"></div>
+                <div class="icon-update-user" @click="isOpenPopup = true; idSelected = candidate.id"></div>
             </td>
           </tr>
         </tbody>
@@ -198,6 +201,7 @@ const isNextBtnDisabled = computed(() => {
       </div>
     </div>
   </div>
+  <CandidateFormPopup :idSelected="idSelected" v-model="isOpenPopup"/>
 </template>
 
 <style scoped>
@@ -544,6 +548,9 @@ input[type="checkbox"] {
 .page-size :deep(.base-select) {
   min-width: 68px;
   width: auto;
+}
+.page-size :deep(.form-group) {
+  margin-bottom: 0;
 }
 
 .page-size :deep(.select-dropdown) {

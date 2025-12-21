@@ -17,6 +17,10 @@ const props = defineProps({
     placeholder: {
         type: String,
         default: 'Chọn giá trị'
+    },
+    label: {
+        type: String,
+        default: null
     }
 });
 
@@ -58,7 +62,7 @@ onUnmounted(() => { window.removeEventListener('click', handleClickOutside); });
 <template>
     <div class="base-select" ref="selectRef">
         <div class="select-dropdown" v-if="isOpen">
-            <ul>
+            <ul v-if="options.length > 0">
                 <li 
                     v-for="(option, index) in options" 
                     :key="index"
@@ -69,28 +73,44 @@ onUnmounted(() => { window.removeEventListener('click', handleClickOutside); });
                     {{ option.value }}
                 </li>
             </ul>
+            <div v-else class="select-empty"></div>
         </div>
-        <div 
-            class="select-trigger" 
-            :class="{ 'is-active': isOpen, 'has-value': modelValue !== null }"
-            @click="toggleDropdown"
-        >
+        <div class="form-group">
+            <label v-if="label" class="form-label">{{ label }}</label>
+
+            <div 
+                class="select-trigger" 
+                :class="{ 'is-active': isOpen, 'has-value': modelValue !== null }"
+                @click="toggleDropdown"
+            >
             <span class="text">{{ displayLabel }}</span>
             
             <div class="icon-16 icon-dropdown-btn"></div>
+        </div>
         </div>
     </div>
 </template>
 
 <style scoped>
+.form-group {
+    flex: 1;
+    margin-bottom: 16px;
+}
+.form-label {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    color: #374151;
+    margin-bottom: 8px;
+}
 .base-select {
     position: relative;
     width: 100%; 
     min-width: 120px;
     font-family: 'Inter', sans-serif;
     user-select: none;
+    flex: 1;
 }
-
 
 .select-trigger {
     display: flex;
@@ -161,5 +181,16 @@ onUnmounted(() => { window.removeEventListener('click', handleClickOutside); });
     background-color: #eff6ff;
     color: #3b82f6;
     font-weight: 500;
+}
+
+.select-empty {
+    height: 36px;               
+    display: flex;
+    align-items: center;        
+    justify-content: center;   
+    color: #9ca3af;             
+    font-size: 13px;
+    cursor: default;           
+    user-select: none;
 }
 </style>

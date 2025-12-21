@@ -271,3 +271,50 @@
     opacity: 0;
     transition: opacity 0.2s ease;
 }
+
+.icon-close-btn {
+    width: 20px;
+    height: 20px;
+    min-width: 20px;
+    background-color: #666666;
+    mask-position: -73px -136px;
+    mask-image: url("../../assets/icons/ICON.svg");
+    mask-repeat: no-repeat;
+    cursor: pointer;
+}
+.icon-plus-blue  {
+    width: 14px;
+    height: 14px;
+    min-width: 14px;
+    background-color: #2680eb;
+    mask-position: -369px -705px;
+    mask-image: url("../../assets/icons/ICON.svg");
+    mask-repeat: no-repeat;
+}
+
+.icon-dot-import {
+    width: 15px;
+    min-width: 15px;
+    height: 15px;
+    background: url(../../assets/icons/ICON.svg) -305px -33px no-repeat;
+    margin-bottom: 8px;
+}
+
+.icon-dropdown-btn {
+    width: 16px;
+    height: 16px;
+    min-width: 16px;
+    background-color: #7a8188;;
+    mask-position: -32px -48px;
+    mask-image: url("../../assets/icons/ICON.svg");
+    mask-repeat: no-repeat;
+}
+.icon-more-option-btn {
+    width: 16px;
+    height: 16px;
+    min-width: 16px;
+    background-color: #7a8188;;
+    mask-position: -96px -80px;
+    mask-image: url("../../assets/icons/ICON.svg");
+    mask-repeat: no-repeat;
+}

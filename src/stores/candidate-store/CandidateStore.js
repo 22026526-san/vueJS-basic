@@ -7,10 +7,6 @@ export const useCandidateStore = defineStore('candidate', {
     }),
 
     getters: {
-        saveToLocalStorage() {
-            localStorage.setItem('my-candidates', JSON.stringify(this.candidates));
-        },
-        
         getCandidateById: (state) => {
             return (id) => state.candidates.find(c => c.id === id)
         }
@@ -19,7 +15,7 @@ export const useCandidateStore = defineStore('candidate', {
     actions: {
         addCandidate(newCandidate) {
             if (!newCandidate.id) {
-                newCandidate.id = Math.floor(Math.random() * 100000);
+                newCandidate.id = this.candidates.length > 0 ? Math.max(...this.candidates.map(c => c.id)) + 1 : 1;
             }
             
             this.candidates.unshift(newCandidate);
@@ -35,9 +31,8 @@ export const useCandidateStore = defineStore('candidate', {
             }
         },
         
-        deleteCandidate(id) {
-            this.candidates = this.candidates.filter(c => c.id !== id);
-            this.saveToLocalStorage();
-        }
+        saveToLocalStorage() {
+            localStorage.setItem('my-candidates', JSON.stringify(this.candidates));
+        },
     }
 })
