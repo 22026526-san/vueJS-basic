@@ -1,5 +1,5 @@
 <template>
-    <div class="sidebar-content">
+    <div class="sidebar-content" :class="{ collapsed: isCollapsed }">
         <div class="sidebar-content-list">
             <div class="sidebar-content-list-item">
                 <div class="icon-24 icon-sb-recruiment"></div>
@@ -58,7 +58,7 @@
         </div>
 
         <div class="sidebar-btn">
-            <div class="collapse-btn">
+            <div class="collapse-btn" @click="toggleSidebar">
                 <div class="icon-24 icon-left"> </div>
                 <div class="label">Thu gọn</div>
             </div>
@@ -67,9 +67,15 @@
     </div>
 </template>
 
-<script>
-export default {
+<script setup>
+import { ref } from 'vue'; 
 
+const isCollapsed = ref(false);
+const emit = defineEmits(['toggle-sidebar']);
+
+const toggleSidebar = () => {
+    isCollapsed.value = !isCollapsed.value;
+    emit('toggle-sidebar', isCollapsed.value);
 }
 </script>
 
@@ -84,23 +90,19 @@ export default {
     background: rgba(0, 0, 0, 0.3);
 }
 
-.sidebar.collapsed {
-    min-width: 62px;
-}
-
-.sidebar.collapsed .label {
+.sidebar-container.collapsed .label {
     display: none;
 }
 
-.sidebar.collapsed .collapse-btn .icon-24 {
+.sidebar-container.collapsed .collapse-btn .icon-24 {
     transform: rotate(180deg);
 }
 
-.sidebar.collapsed .sidebar-content-list-item {
+.sidebar-container.collapsed .sidebar-content-list-item {
     justify-content: center;
 }
 
-.sidebar.collapsed .sidebar-content-list-item .icon-24 {
+.sidebar-container.collapsed .sidebar-content-list-item .icon-24 {
     margin-right: 0;
 }
 

@@ -1,6 +1,13 @@
 <script setup>
 import TheHeader from './Header.vue';
 import TheSidebar from './SideBar.vue';
+import { ref } from 'vue';
+
+const isCollapsed = ref(false);
+
+const handleToggle = () => {
+    isCollapsed.value = !isCollapsed.value;
+}
 </script>
 
 <template>
@@ -11,8 +18,8 @@ import TheSidebar from './SideBar.vue';
         </div>
 
         <div class="main-layout">
-            <div class="sidebar-container">
-                <TheSidebar />
+            <div class="sidebar-container" :class="{ collapsed: isCollapsed }">
+                <TheSidebar @toggle-sidebar="handleToggle"/>
             </div>
 
             <div class="layout-content">
@@ -64,5 +71,8 @@ import TheSidebar from './SideBar.vue';
     background-color: #f2f2f2;
     flex-direction: column;
     overflow: hidden;
+}
+.sidebar-container.collapsed {
+    min-width: 62px; 
 }
 </style>

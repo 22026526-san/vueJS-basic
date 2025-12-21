@@ -77,7 +77,7 @@ const isNextBtnDisabled = computed(() => {
   <div class="body-title">
     <div class="body-title-left">Ứng viên</div>
     <div class="body-title-right">
-      <div class="body-title-btn" @click="isOpenPopup = true; isEditPopup = false">
+      <div class="body-title-btn" @click="isOpenPopup = true">
         <div class="icon-20 btn-icon-add"></div>
         <span>Thêm ứng viên</span>
       </div>
