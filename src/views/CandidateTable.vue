@@ -1,5 +1,16 @@
 <script setup>
-// Logic Javascript sẽ viết ở đây
+import { useCandidateStore } from '../stores/candidate-store/CandidateStore.js';
+import { storeToRefs } from 'pinia';
+
+const store = useCandidateStore();
+
+const { candidates, totalCandidates } = storeToRefs(store);
+
+const { deleteCandidate } = store;
+
+function checkNull(value) {
+  return value === null || value === undefined || value === '' ? '--' : value;
+}
 </script>
 
 <template>
@@ -61,11 +72,55 @@
             <th></th>
           </tr>
         </thead>
-        <tbody></tbody>
+        <tbody>
+          <tr v-for="candidate in candidates" :key="candidate.id">
+            <td><input type="checkbox" value="${candidate.id}"></td>
+            <td>
+                <div class="name-cell">
+                    <div class="avatar" style="background: #8a5cf680">NM</div>
+                    <div class="name-info">
+                        <span class="name-main">{{checkNull(candidate.fullName)}}</span>
+                    </div>
+                </div>
+            </td>
+            <td>{{checkNull(candidate.email)}}</td>
+            <td>{{checkNull(candidate.phone)}}</td>
+            <td>{{checkNull(candidate.recruitmentCampaign)}}</td>
+            <td><span>{{checkNull(candidate.recruitmentStatus)}}</span></td>
+            <td>{{checkNull(candidate.jobPost)}}</td>
+            <td>{{checkNull(candidate.recruitmentRound)}}</td>
+            <td>
+                <div class="stars">
+                    <span 
+                        v-for="i in 5" 
+                        :key="i"
+                        :style="{ 
+                            color: i <= (candidate.evaluation || 0) ? '#ffc107' : '#e5e7eb',
+                            fontSize: '18px',
+                            marginRight: '2px'
+                        }"
+                    >
+                        ★
+                    </span>
+                </div>
+            </td>
+            <td>{{checkNull(candidate.recruitmentDate)}}</td>
+            <td>{{checkNull(candidate.candidateSource)}}</td>
+            <td>{{checkNull(candidate.educationLevel)}}</td>
+            <td>{{checkNull(candidate.recentWorkplace)}}</td>
+            <td>{{checkNull(candidate.area)}}</td>
+            <td>{{checkNull(candidate.dateOfBirth)}}</td>
+            <td>{{checkNull(candidate.address)}}</td>
+            <td>{{checkNull(candidate.gender)}}</td>
+            <td>
+                <div class="icon-update-user" data-id="${candidate.id}"></div>
+            </td>
+          </tr>
+        </tbody>
       </table>
     </div>
     <div class="table-footer">
-      <div class="footer-left">Tổng: <strong></strong> bản ghi</div>
+      <div class="footer-left">Tổng: <strong>{{ totalCandidates }}</strong> bản ghi</div>
       <div class="footer-right">
         <div class="page-size">
           <span>Số bản ghi/trang</span>
