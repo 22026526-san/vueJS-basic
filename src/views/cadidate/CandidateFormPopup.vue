@@ -3,8 +3,8 @@ import { Teleport } from 'vue';
 import { ref, reactive, watch } from 'vue';
 import { useCandidateStore } from '../../stores/candidate-store/CandidateStore.js';
 import { storeToRefs } from 'pinia';
-import BaseInput from '../base/BaseInput.vue';
-import BaseSelect from '../base/BaseSelect.vue';
+import BaseInput from '../../components/base/BaseInput.vue';
+import BaseSelect from '../../components/base/BaseSelect.vue';
 
 const props = defineProps({
     modelValue: {
@@ -61,7 +61,7 @@ watch(() => props.modelValue, (isOpen) => {
 const genderOptions = [
     { value: 'Nam' },
     { value: 'Nữ' },
-    { value: 'Khác' },
+    { value: 'Khác'},
 ];
 const defaultNVKT = ref('Đinh Nga QTHT');
 

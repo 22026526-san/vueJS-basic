@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
-import CandidateTable from '../views/CandidateTable.vue'
+import CandidateTable from '../views/cadidate/CandidateTable.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),

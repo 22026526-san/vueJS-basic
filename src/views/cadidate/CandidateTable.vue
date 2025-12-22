@@ -1,9 +1,9 @@
 <script setup>
-import { useCandidateStore } from '../stores/candidate-store/CandidateStore.js';
+import { useCandidateStore } from '../../stores/candidate-store/CandidateStore.js';
 import { storeToRefs } from 'pinia';
 import { ref , computed} from 'vue';
-import BaseSelect from '../components/base/BaseSelect.vue';
-import CandidateFormPopup from '../components/candidate/CandidateFormPopup.vue';
+import BaseSelect from '../../components/base/BaseSelect.vue';
+import CandidateFormPopup from '../cadidate/CandidateFormPopup.vue';
 
 const store = useCandidateStore();
 
@@ -139,7 +139,7 @@ const isNextBtnDisabled = computed(() => {
             <td><input type="checkbox" value="${candidate.id}"></td>
             <td>
                 <div class="name-cell">
-                    <div class="avatar" style="background: #8a5cf680">NM</div>
+                    <div class="avatar">ms</div>
                     <div class="name-info">
                         <span class="name-main">{{checkNull(candidate.fullName)}}</span>
                     </div>
@@ -268,27 +268,31 @@ const isNextBtnDisabled = computed(() => {
     transform: rotate(360deg);
   }
 }
+@keyframes spin-ai-reverse {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(-360deg); } 
+}
 
 .icon-ai-button-table {
   width: 23px;
   height: 23px;
-  background: url('../assets/icons/ai-search-candidate.svg') center / cover no-repeat,
-              linear-gradient(135deg, #95c5ff, #0051ff);
+  background: url('../../assets/icons/ai-search-candidate.svg') center / cover no-repeat;
   border-radius: 50%;
-  box-shadow: 0 0 5px rgba(59, 130, 246, 0.7);
-  animation: spin-ai 3s linear infinite;
+  animation: spin-ai-reverse 3s linear infinite;
 }
 
 .dx-button-content {
   position: absolute;
-  top: 0;
-  left: 3px;
+  top: 5px;
+  left: 2px;
   padding: 4px;
-  height: 35px;
+  height: 25px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: transparent;
+  background: url("../../assets/icons/ai-search-candidate-bg.svg") no-repeat center;
+  background-size: contain;
+  animation: spin-ai 3s linear infinite;
 }
 
 .body-title {
@@ -527,7 +531,7 @@ const isNextBtnDisabled = computed(() => {
   background-color: #2680eb;
 }
 .avatar {
-  width: 32px;
+  width: 30px;
   height: 32px;
   border-radius: 50%;
   display: flex;
@@ -537,6 +541,7 @@ const isNextBtnDisabled = computed(() => {
   font-size: 12px;
   color: white;
   margin-right: 8px;
+  background: #8a5cf680
 }
 
 input[type="checkbox"] {

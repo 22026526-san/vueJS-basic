@@ -1,6 +1,6 @@
 <script setup>
-import TheHeader from './Header.vue';
-import TheSidebar from './SideBar.vue';
+import TheHeader from './components/Header.vue';
+import TheSidebar from './components/SideBar.vue';
 import { ref } from 'vue';
 
 const isCollapsed = ref(false);
@@ -54,7 +54,7 @@ const handleToggle = () => {
     min-width: 236px;
     height: 100%;
     background:
-        url(../../assets/icons/sidebar-bg.svg);
+        url(../assets/icons/sidebar-bg.svg);
     background-color: #051529;
     background-position: bottom;
     background-repeat: no-repeat;
