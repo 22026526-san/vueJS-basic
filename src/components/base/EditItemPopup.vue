@@ -10,6 +10,7 @@ const props = defineProps({
 const emit = defineEmits(['close-edit', 'save-edit']);
 
 const localOptions = ref([]);
+const errorMessages = ref([]);
 
 watch(
     () => props.isOpenEdit,
@@ -34,11 +35,24 @@ const addOption = () => {
 };
 
 const handleSave = () => {
+    let hasError = false
+    localOptions.value.forEach((option, index) => {
+        if (option.active === 1 && (!option.value || option.value.trim() === '')) {
+            errorMessages.value[index] = 'Tên không được để trống';
+            hasError = true; 
+        } 
+        else {
+            errorMessages.value[index] = ''; 
+        }
+    });
+    if (hasError) return;
+
     emit('save-edit', localOptions.value);
     emit('close-edit');
 };
 
 const handleClose = () => {
+    errorMessages.value = []
     emit('close-edit');
 };
 </script>
@@ -53,15 +67,23 @@ const handleClose = () => {
                 </div>
 
                 <div class="popup-body">
+                    <div class="search-bar">
+                        <div class="search-bar-content">
+                            <div class="icon-16 icon-search-bar"></div>
+                        </div>
+                        <input type="text" placeholder="Tìm kiếm" v-model.lazy="searchQuery"/>
+                    </div>
                     <div class="options-list">
-                        <div v-for="(option, index) in localOptions" :key="index" class="option-row">
-                            <input type="checkbox" :checked="option.active === 1" @change="toggleActive(index)"
-                                class="option-checkbox" />
+                        <div v-for="(option, index) in localOptions" :key="index" class="option-row-container">
+                            <div class="option-row-content">
+                                <input type="checkbox" :checked="option.active === 1" @change="toggleActive(index)"
+                                    class="option-checkbox" />
 
-                            <input type="text" v-model="option.value" class="option-input"
-                                placeholder="Nhập tên giá trị..." />
+                                <input type="text" v-model="option.value" class="option-input" :class="{ 'input-error': errorMessages[index] }"/>
 
-                            <div class="icon-16 icon-delete" @click="deleteOption(index)"></div>
+                                <div class="icon-16 icon-delete" @click="deleteOption(index)"></div>
+                            </div>
+                            <span v-if="errorMessages[index]" class="error-text">{{ errorMessages[index] }}</span>
                         </div>
                     </div>
 
@@ -127,7 +149,7 @@ const handleClose = () => {
 }
 
 .options-list {
-    min-height: 328px;
+    min-height: 336px;
     flex: 1;                
     overflow-y: auto;  
     padding: 0 24px;     
@@ -136,13 +158,28 @@ const handleClose = () => {
     margin-top: 15px;
     cursor: pointer;
 }
-.option-row {
+.option-row-content {
     display: flex;
     align-items: center;
     gap: 12px;
     margin-bottom: 12px;
 }
-
+.option-row-container {
+    display: flex;
+    flex-direction: column;
+}
+.error-text {
+    color: red;
+    font-size: 12px;
+    margin-top: 4px;
+    display: block;
+    margin-left: 28px;
+    margin-bottom: 8px;
+    margin-top: -4px;
+}
+.input-error {
+    border-color: red !important;
+}
 .option-checkbox {
     width: 18px;
     height: 18px;
@@ -161,26 +198,35 @@ const handleClose = () => {
     border-color: #3b82f6;
 }
 
+.search-bar {
+  flex: 1;
+  position: relative;
+  padding:8px 24px 16px 24px;
+}
 
-/* .icon-delete {
-    width: 24px;
-    height: 24px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: #fee2e2;
-    color: #ef4444;
-    border-radius: 4px;
-    cursor: pointer;
-    font-weight: bold;
-    font-size: 18px;
-    user-select: none;
-} */
-/* 
-.icon-delete:hover {
-    background: #fecaca;
-} */
+.search-bar input {
+  width: 100%;
+  padding: 8px 12px 8px 36px;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  font-size: 14px;
+  outline: none;
+}
 
+.search-bar input:focus {
+  border-color: #2680eb;
+}
+
+.search-bar-content {
+  position: absolute;
+  top: 12px;
+  left: 30px;
+  padding: 4px;
+  height: 25px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
 .add-row-btn {
     color: #3b82f6;

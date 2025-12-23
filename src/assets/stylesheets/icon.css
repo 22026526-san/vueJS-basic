@@ -255,6 +255,10 @@
     mask-position: -220px -123px;
     background-color: #ff1d1d;
 }
+.icon-search-bar{
+    mask-position: -311px -1105px;
+    background-color: #7a8188;
+}
 
 .icon-prev.disabled,
 .icon-next.disabled {
