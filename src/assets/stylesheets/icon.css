@@ -251,6 +251,11 @@
     background-color: #6b7280;
 }
 
+.icon-delete{
+    mask-position: -220px -123px;
+    background-color: #ff1d1d;
+}
+
 .icon-prev.disabled,
 .icon-next.disabled {
     opacity: 0.5 !important;

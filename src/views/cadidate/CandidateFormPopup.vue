@@ -5,6 +5,10 @@ import { useCandidateStore } from '../../stores/candidate-store/CandidateStore.j
 import { storeToRefs } from 'pinia';
 import BaseInput from '../../components/base/BaseInput.vue';
 import BaseSelect from '../../components/base/BaseSelect.vue';
+import FreeEntrySelect from '../../components/base/FreeEntrySelect.vue';
+import AddItemPopup from '../../components/base/AddItemPopup.vue';
+import OptionEditorSelect from '../../components/base/OptionEditorSelect.vue';
+import EditItemPopup from '../../components/base/EditItemPopup.vue';
 
 const props = defineProps({
     modelValue: {
@@ -42,7 +46,7 @@ const formData = reactive({ ...defaultForm });
 const updateFormData = () => {
     if (props.idSelected) {
         const candidateFound = candidates.value.find(item => item.id === props.idSelected);
-        
+
         if (candidateFound) {
             Object.assign(formData, candidateFound);
         }
@@ -58,12 +62,65 @@ watch(() => props.modelValue, (isOpen) => {
     }
 });
 
+// array options
 const genderOptions = [
     { value: 'Nam' },
     { value: 'Nữ' },
-    { value: 'Khác'},
+    { value: 'Khác' },
 ];
+const levelOptions = ref([
+    { value: 'Cử nhân' },
+    { value: 'Kỹ sư' },
+    { value: 'Thạc sỹ' },
+    { value: 'Cao đẳng' }
+]);
+const placeOptions = ref([
+    { value: 'ĐH Bách Khoa' }, 
+    { value: 'ĐH Quốc Gia' }
+]);
+const areaOptions = ref([
+    { active:1, value: 'Bắc Từ Liêm' }, 
+    { active:1, value: 'Cầu Giấy' },
+    { active:1, value: 'Thanh Xuân' },
+    { active:1, value: 'Tây Hồ' },
+    { active:1, value: 'Gia Lâm' },
+]);
+const majorOptions = ref([
+    { value: 'CNTT' }, 
+    { value: 'Kinh tế'}
+]);
+// end 
+
 const defaultNVKT = ref('Đinh Nga QTHT');
+const activeField = ref('');
+const isAddPopupOpen = ref(false);
+const isEditPopupOpen = ref(false);
+
+const handleOpenAddPopup = (type) => {
+    activeField.value = type;
+    isAddPopupOpen.value = true;
+};
+const handleSaveNewItem = (newValue) => {
+    const newItem = { value: newValue };
+
+    if (activeField.value === 'level') {
+        levelOptions.value.push(newItem);
+    } 
+    else if (activeField.value === 'place') {
+        placeOptions.value.push(newItem);
+    } 
+    else if (activeField.value === 'major') {
+        majorOptions.value.push(newItem);
+    }
+};
+
+const handleOpenEdit = () => {
+    isEditPopupOpen.value = true;
+};
+
+const handleSaveOptions = (updatedOptions) => {
+    areaOptions.value = updatedOptions;
+};
 
 const store = useCandidateStore();
 const { candidates } = storeToRefs(store);
@@ -106,115 +163,54 @@ const closePopup = () => {
                         <div class="form-candidate">
                             <div class="form-section active" id="section1">
 
-                                <BaseInput
-                                    v-model="formData.fullName"
-                                    label="Họ và tên"
-                                    placeholder="Nhập họ và tên"
-                                    type="text"
-                                />
+                                <BaseInput v-model="formData.fullName" label="Họ và tên" placeholder="Nhập họ và tên"
+                                    type="text" />
 
                                 <div class="form-row">
-                                    <BaseInput
-                                        v-model="formData.dateOfBirth"
-                                        label="Ngày sinh"
-                                        placeholder="Chọn ngày sinh"
-                                        type="date"
-                                    />
-                                    <BaseSelect 
-                                        v-model="formData.gender" 
-                                        :options="genderOptions" 
-                                        label="Giới tính"
-                                        placeholder="Chọn giới tính"
-                                    />
+                                    <BaseInput v-model="formData.dateOfBirth" label="Ngày sinh"
+                                        placeholder="Chọn ngày sinh" type="date" />
+                                    <BaseSelect v-model="formData.gender" :options="genderOptions" label="Giới tính"
+                                        placeholder="Chọn giới tính" />
                                 </div>
 
-                                <div class="form-row-3">
-                                    <div class="form-group">
-                                        <label class="form-label">Khu vực</label>
-                                        <div class="form-input display-row bordered-input">
-                                            <input type="text" class="input-reset" placeholder="Chọn khu vực" required
-                                                id="area" v-model="formData.area"/>
-                                            <div class="icon-dropdown-btn"></div>
-                                        </div>
-                                    </div>
-                                    <div class="dictionary-setting ">
-                                        <div class="icon-more-option-btn"></div>
-                                    </div>
-                                </div>
-
-                                <div class="form-row">
-                                    <BaseInput
-                                        v-model="formData.phone"
-                                        label="Số điện thoại"
-                                        placeholder="Nhập số điện thoại"
-                                        type="text"
-                                    />
-                                    <BaseInput
-                                        v-model="formData.email"
-                                        label="Email"
-                                        placeholder="Nhập email"
-                                        type="email"
-                                    />
-                                </div>
-
-                                <BaseInput
-                                    v-model="formData.address"
-                                    label="Địa chỉ"
-                                    placeholder="Nhập địa chỉ"
-                                    type="text"
+                                <OptionEditorSelect 
+                                    label="Khu vực"
+                                    v-model="formData.area"
+                                    :options="areaOptions"
+                                    @click-edit="handleOpenEdit"
                                 />
+                                <div class="form-row">
+                                    <BaseInput v-model="formData.phone" label="Số điện thoại"
+                                        placeholder="Nhập số điện thoại" type="text" />
+                                    <BaseInput v-model="formData.email" label="Email" placeholder="Nhập email"
+                                        type="email" />
+                                </div>
+
+                                <BaseInput v-model="formData.address" label="Địa chỉ" placeholder="Nhập địa chỉ"
+                                    type="text" />
 
                                 <div class="section-title">HỌC VẤN</div>
 
-                                <div class="form-group display-row">
-                                    <div class="display-flex">
-                                        <div class="icon-dot-import"></div>
-                                        <label class="form-label">Trình độ đào tạo</label>
-                                    </div>
+                                <FreeEntrySelect v-model="formData.educationLevel" placeholder="Nhập trình độ đào tạo"
+                                    label="Trình độ đào tạo" :options="levelOptions" @click-add="handleOpenAddPopup('level')" />
 
-                                    <div class="form-dx-texteditor">
-                                        <div class="dx-texteditor-container display-row bordered-input">
-                                            <input type="text" class="input-reset" placeholder="Nhập trình độ đào tạo"
-                                                id="educationLevel" v-model="formData.educationLevel"/>
-                                            <div class="icon-plus-blue"></div>
-                                        </div>
-                                        <div class="dx-texteditor-dropdown">
-                                            <div class="icon-dropdown-btn"></div>
-                                        </div>
-                                    </div>
-                                </div>
+                                <FreeEntrySelect placeholder="Nhập Nơi đào tạo" label="Nơi đào tạo" :options="placeOptions"
+                                    @click-add="handleOpenAddPopup('place')" />
 
-                                <div class="form-group display-row">
-                                    <div class="display-flex">
-                                        <div class="icon-dot-import"></div>
-                                        <label class="form-label">Nơi đào tạo</label>
-                                    </div>
-                                    <div class="form-dx-texteditor">
-                                        <div class="dx-texteditor-container display-row bordered-input">
-                                            <input type="text" class="input-reset" placeholder="Nhập nơi đào tạo" />
-                                            <div class="icon-plus-blue"></div>
-                                        </div>
-                                        <div class="dx-texteditor-dropdown">
-                                            <div class="icon-dropdown-btn"></div>
-                                        </div>
-                                    </div>
-                                </div>
+                                <FreeEntrySelect placeholder="Nhập chuyên ngành" label="Chuyên ngành" :options="majorOptions"
+                                    @click-add="handleOpenAddPopup('major')"/>
 
-                                <div class="form-group display-row">
-                                    <div class="display-flex">
-                                        <div class="icon-dot-import"></div>
-                                        <label class="form-label">Chuyên ngành</label>
-                                    </div>
-                                    <div class="form-dx-texteditor">
-                                        <div class="dx-texteditor-container display-row bordered-input">
-                                            <input type="text" class="input-reset" placeholder="Nhập chuyên ngành" />
-                                            <div class="icon-plus-blue"></div>
-                                        </div>
-                                        <div class="dx-texteditor-dropdown">
-                                            <div class="icon-dropdown-btn"></div>
-                                        </div>
-                                    </div>
-                                </div>
+                                <AddItemPopup :isOpenAdd="isAddPopupOpen" title="Thêm trình độ đào tạo"
+                                    label="Tên trình độ đào tạo" @close-add="isAddPopupOpen = false"
+                                    @save-add="handleSaveNewItem" />
+
+                                <EditItemPopup
+                                    :isOpenEdit="isEditPopupOpen"
+                                    title="Thiết Lập Giá Trị"
+                                    :initialOptions="areaOptions"
+                                    @close-edit="isEditPopupOpen = false"
+                                    @save-edit="handleSaveOptions"
+                                />
 
                                 <a href="#" class="add-link">+ Thêm học vấn</a>
                             </div>
@@ -222,31 +218,16 @@ const closePopup = () => {
                             <div class="form-section active" id="section2">
 
                                 <div class="form-row" style="margin-top: 20px">
-                                    <BaseInput
-                                        v-model="formData.recruitmentDate"
-                                        label="Ngày tuyển dụng"
-                                        placeholder="Chọn ngày tuyển dụng"
-                                        type="date"
-                                    />
-                                    <BaseSelect 
-                                        :options="[]" 
-                                        label="Nguồn ứng viên"
-                                        placeholder="Chọn nguồn ứng viên"
-                                    />
+                                    <BaseInput v-model="formData.recruitmentDate" label="Ngày tuyển dụng"
+                                        placeholder="Chọn ngày tuyển dụng" type="date" />
+                                    <BaseSelect :options="[]" label="Nguồn ứng viên"
+                                        placeholder="Chọn nguồn ứng viên" />
                                 </div>
 
                                 <div class="form-row">
-                                    <BaseSelect 
-                                        v-model="defaultNVKT" 
-                                        :options="[{value: 'Đinh Nga QTHT'}]" 
-                                        label="Nhân sự khai thác"
-                                        placeholder="Chọn nhân sự khai thác"
-                                    />
-                                    <BaseSelect 
-                                        :options="[]" 
-                                        label="Cộng tác viên"
-                                        placeholder="Chọn cộng tác viên"
-                                    />
+                                    <BaseSelect v-model="defaultNVKT" :options="[{ value: 'Đinh Nga QTHT' }]"
+                                        label="Nhân sự khai thác" placeholder="Chọn nhân sự khai thác" />
+                                    <BaseSelect :options="[]" label="Cộng tác viên" placeholder="Chọn cộng tác viên" />
                                 </div>
 
                                 <div class="checkbox-group">
@@ -257,20 +238,12 @@ const closePopup = () => {
                                 <a href="#" class="add-link">+ Thêm người giới thiệu</a>
 
 
-                                <BaseInput
-                                    v-model="formData.recentWorkplace"
-                                    label="Nơi làm việc gần đây"
-                                    placeholder="Nhập nơi làm việc gần đây"
-                                    type="text"
-                                />
+                                <BaseInput v-model="formData.recentWorkplace" label="Nơi làm việc gần đây"
+                                    placeholder="Nhập nơi làm việc gần đây" type="text" />
 
                                 <a href="#" class="add-link">+ Thêm kinh nghiệm làm việc</a>
 
-                                <BaseInput
-                                    label="Nơi làm việc"
-                                    placeholder="Nhập nơi làm việc"
-                                    type="text"
-                                />
+                                <BaseInput label="Nơi làm việc" placeholder="Nhập nơi làm việc" type="text" />
 
                                 <div class="form-group">
                                     <label class="form-label">Thời gian</label>
@@ -281,12 +254,8 @@ const closePopup = () => {
                                     </div>
                                 </div>
 
-                                <BaseInput
-                                    v-model="formData.jobPost"
-                                    label="Vị trí công việc"
-                                    placeholder="Nhập vị trí công việc"
-                                    type="text"
-                                />
+                                <BaseInput v-model="formData.jobPost" label="Vị trí công việc"
+                                    placeholder="Nhập vị trí công việc" type="text" />
 
                                 <div class="form-group">
                                     <label class="form-label">Mô tả công việc</label>
@@ -316,11 +285,12 @@ const closePopup = () => {
     bottom: 0;
     background: rgba(0, 0, 0, 0.5);
     z-index: 9999;
-    display: flex; 
+    display: flex;
     align-items: center;
     justify-content: center;
     opacity: 1;
 }
+
 .popup {
     background: white;
     border-radius: 4px;
@@ -339,14 +309,14 @@ const closePopup = () => {
     padding: 20px 24px;
 }
 
-.form-content{
+.form-content {
     flex: 1;
     display: flex;
     flex-direction: row;
     gap: 8px;
 }
 
-.avatar-candidate{
+.avatar-candidate {
     min-width: 68px;
     height: 68px;
     border-radius: 50%;
@@ -414,43 +384,8 @@ const closePopup = () => {
 }
 
 .form-input,
-.form-select,
 .form-textarea {
     width: 100%;
-    padding: 10px 12px;
-    border: 1px solid #d1d5db;
-    border-radius: 6px;
-    font-size: 14px;
-    font-family: 'Inter', sans-serif;
-    transition: all 0.2s;
-}
-
-.input-reset {
-    border: none;
-    background: transparent;
-    outline: none;
-    padding: 0;
-    margin: 0;
-    font-size: 14px;
-    box-shadow: none;
-    -webkit-appearance: none; 
-    appearance: none;
-    border-radius: 0;
-    width: 80%;
-}
-
-.display-row {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    justify-content: space-between;
-}
-.display-flex {
-    display: flex;
-    align-items: center;
-}
-
-.dx-texteditor-container{
     padding: 10px 12px;
     border: 1px solid #d1d5db;
     border-radius: 6px;
@@ -463,31 +398,18 @@ const closePopup = () => {
 .form-textarea:focus {
     outline: none;
     border-color: #3b82f6;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
+
 .form-input:hover,
 .form-textarea:hover {
     border-color: #3b82f6;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); 
     outline: none;
 }
-/* dx */
-.dx-texteditor-container:hover {
+
+.form-input:focus-within {
     border-color: #3b82f6;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-    cursor: text;
 }
 
-.form-input:focus-within,
-.dx-texteditor-container:focus-within {
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-}
-.form-dx-texteditor{
-    display: flex;
-    align-items: stretch;
-}
-/* dx */
 .form-textarea {
     resize: vertical;
     min-height: 80px;
@@ -498,6 +420,7 @@ const closePopup = () => {
     flex: 1;
     gap: 16px;
 }
+
 .form-section {
     display: none;
 }
@@ -505,43 +428,6 @@ const closePopup = () => {
 .form-section.active {
     display: block;
 }
-/*  */
-.form-row-3 {
-    display: flex;
-    flex: 1;
-    align-items: center;
-}
-
-.bordered-input {
-    border-bottom-right-radius: 0;
-    border-top-right-radius: 0;
-}
-
-.dictionary-setting {
-    height: 38px;
-    width: 38px;
-    border: 1px solid #e0e0e0;
-    border-top-right-radius: 4px;
-    border-top-left-radius: 4px;
-    background: #f5f5f5;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-top: 9px;
-    transform: rotate(90deg);
-}
-.dx-texteditor-dropdown {
-    height: 39px;
-    width: 39px;
-    border: 1px solid #e0e0e0;
-    border-top-right-radius: 4px;
-    border-bottom-right-radius: 4px;
-    background: #ffffff;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-/*  */
 
 .add-link {
     color: #3b82f6;
@@ -640,15 +526,21 @@ const closePopup = () => {
     cursor: not-allowed;
 }
 
-.hidden {
-    display: none;
-}
-
 input[type="file"] {
     display: none;
 }
+
 :deep(.select-dropdown) {
-  top: 76%; 
-  margin-top: 4px;
+    top: 76%;
+    margin-top: 4px;
+}
+
+:deep(.form-dx-texteditor .select-dropdown) {
+    top: 100%;
+    margin-top: 4px;
+}
+:deep(.option-edit-container .select-dropdown) {
+    top: 100%;
+    margin-top: 4px;
 }
 </style>

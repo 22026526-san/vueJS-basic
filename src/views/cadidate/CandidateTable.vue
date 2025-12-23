@@ -1,7 +1,7 @@
 <script setup>
 import { useCandidateStore } from '../../stores/candidate-store/CandidateStore.js';
 import { storeToRefs } from 'pinia';
-import { ref , computed} from 'vue';
+import { ref , computed, watch} from 'vue';
 import BaseSelect from '../../components/base/BaseSelect.vue';
 import CandidateFormPopup from '../cadidate/CandidateFormPopup.vue';
 
@@ -36,6 +36,10 @@ const startRecord = computed(() => {
 const endRecord = computed(() => {
     const end = (currentPage.value - 1) * pageSize.value + pageSize.value;
     return end > totalPages.value ? totalPages.value : end;
+});
+
+watch(pageSize, () => {
+    currentPage.value = 1;
 });
 
 const dataTable = computed(() => {

@@ -16,7 +16,7 @@ const props = defineProps({
 
     placeholder: {
         type: String,
-        default: 'Chọn giá trị'
+        default: ''
     },
     label: {
         type: String,
@@ -62,7 +62,7 @@ onUnmounted(() => { window.removeEventListener('click', handleClickOutside); });
 <template>
     <div class="base-select" ref="selectRef">
         <div class="select-dropdown" v-if="isOpen">
-            <ul v-if="options.length > 0">
+            <ul v-if="props.options.length > 0">
                 <li 
                     v-for="(option, index) in options" 
                     :key="index"
@@ -80,13 +80,13 @@ onUnmounted(() => { window.removeEventListener('click', handleClickOutside); });
 
             <div 
                 class="select-trigger" 
-                :class="{ 'is-active': isOpen, 'has-value': modelValue !== null }"
+                :class="{ 'is-active': isOpen, 'has-value': modelValue !== '' }"
                 @click="toggleDropdown"
             >
-            <span class="text">{{ displayLabel }}</span>
-            
-            <div class="icon-16 icon-dropdown-btn"></div>
-        </div>
+                <span class="text">{{ displayLabel }}</span>
+                
+                <div class="icon-16 icon-dropdown-btn"></div>
+            </div>
         </div>
     </div>
 </template>
@@ -138,7 +138,7 @@ onUnmounted(() => { window.removeEventListener('click', handleClickOutside); });
 
 
 .select-trigger.has-value .text {
-    color: #374151;
+    color: #374151;;
 }
 
 .select-trigger.is-active .arrow-icon {
