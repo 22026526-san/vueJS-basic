@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
-import CandidateTable from '../views/cadidate/CandidateTable.vue'
+import Candidate from '../views/cadidate/Candidate.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -8,7 +8,7 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
-      component: CandidateTable,
+      component: Candidate,
     }
   ]
 })

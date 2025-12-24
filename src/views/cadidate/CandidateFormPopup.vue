@@ -138,6 +138,7 @@ const handleSave = () => {
 
 const closePopup = () => {
     emit('update:modelValue', false);
+    emit('update:idSelected', null);
 }
 </script>
 

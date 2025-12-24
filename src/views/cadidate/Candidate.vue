@@ -205,7 +205,7 @@ const isNextBtnDisabled = computed(() => {
       </div>
     </div>
   </div>
-  <CandidateFormPopup :idSelected="idSelected" v-model="isOpenPopup"/>
+  <CandidateFormPopup v-model:idSelected="idSelected" v-model="isOpenPopup"/>
 </template>
 
 <style scoped>
