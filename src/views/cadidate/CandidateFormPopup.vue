@@ -52,7 +52,6 @@ const updateFormData = () => {
         }
     } else {
         Object.assign(formData, defaultForm);
-        formData.recruitmentDate = new Date().toISOString().split('T')[0];
     }
 };
 
@@ -95,6 +94,7 @@ const defaultNVKT = ref('Đinh Nga QTHT');
 const activeField = ref('');
 const isAddPopupOpen = ref(false);
 const isEditPopupOpen = ref(false);
+const isShowInterview = ref(false);
 
 const handleOpenAddPopup = (type) => {
     activeField.value = type;
@@ -164,7 +164,7 @@ const closePopup = () => {
                             <div class="form-section active" id="section1">
 
                                 <BaseInput v-model="formData.fullName" label="Họ và tên" placeholder="Nhập họ và tên"
-                                    type="text" />
+                                    type="text" is-required="true"/>
 
                                 <div class="form-row">
                                     <BaseInput v-model="formData.dateOfBirth" label="Ngày sinh"
@@ -231,8 +231,28 @@ const closePopup = () => {
                                 </div>
 
                                 <div class="checkbox-group">
-                                    <input type="checkbox" id="rapidInterview" />
+                                    <input type="checkbox" id="rapidInterview" :checked="isShowInterview"
+                                        @change="isShowInterview = $event.target.checked"/>
                                     <label for="rapidInterview">Thêm nhanh người tham chiếu vào kho ứng viên</label>
+                                </div>
+
+                                <div class="rapidInterview-container" v-if="isShowInterview">
+                                    <BaseInput v-model="formData.fullName" label="Họ và tên" placeholder="Nhập họ và tên"
+                                    type="text" isRequired="true"/>
+
+                                    <div class="form-row">
+                                        <BaseInput label="Số điện thoại"
+                                            placeholder="Nhập Số điện thoại" />
+                                        <BaseInput label="Email"
+                                            placeholder="Nhập email" />
+                                    </div>
+
+                                    <div class="form-row">
+                                        <BaseInput label="Vị trí công việc"
+                                            placeholder="Nhập vị trí công việc" isRequired="true"/>
+                                        <BaseInput label="Tên công ty"
+                                            placeholder="Nhập tên công ty" isRequired="true"/>
+                                    </div>
                                 </div>
 
                                 <a href="#" class="add-link">+ Thêm người giới thiệu</a>

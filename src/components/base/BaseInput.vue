@@ -17,6 +17,10 @@ defineProps({
         type: String,
         default: 'text'
     },
+    isRequired:{
+        type: Boolean,
+        default:false
+    }
 });
 
 const emit = defineEmits(['update:modelValue']);
@@ -28,7 +32,7 @@ const handleInput = (event) => {
 
 <template>
     <div class="form-group">
-        <label v-if="label" class="form-label">{{ label }}</label>
+        <label v-if="label" class="form-label">{{ label }}<span class="required" v-if="isRequired">*</span></label>
         
         <input 
             :type="type"
@@ -78,8 +82,10 @@ const handleInput = (event) => {
     border-color: #3b82f6;
     box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
 }
-
-
+.required {
+    color: #ef4444;
+    margin-left: 5px;
+}
 .form-input::placeholder {
     color: #9ca3af;
 }
